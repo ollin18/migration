@@ -1,0 +1,3 @@
+csvkit
+mysql
+apache-airflow[gcp_api,google_auth,s3,slack,mysql]
