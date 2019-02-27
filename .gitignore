@@ -1,0 +1,6 @@
+*.csv
+*.db
+*.cfg
+*.pid
+__pycache__
+logs/
