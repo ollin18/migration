@@ -23,7 +23,7 @@ SHELL := /bin/bash
 ## Airflow variables
 AIRFLOW_GPL_UNIDECODE := yes
 # AIRFLOW_HOME := $(pwd)/airflow_home
-AIRFLOW_HOME := airflow_home
+AIRFLOW_HOME := infrastructure/airflow_home
 AIRFLOW_CONFIG := $(AIRFLOW_HOME)/airflow.cfg
 
 ########################################
