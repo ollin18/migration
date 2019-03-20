@@ -45,9 +45,9 @@ pip: requirements.txt
 	@pip install -r $<
 
 info:
-	@echo Proyecto: $(PROJECT_NAME) ver. $(PROJECT_VERSION)
+	@echo Project: $(PROJECT_NAME) ver. $(PROJECT_VERSION)
 	@python --version
-	@pyenv --version
+	# @pyenv --version
 	@pip --version
 
 ########################################
@@ -87,7 +87,7 @@ sync_to_gs: ##@data Sincroniza los datos hacia GCP GS
 	@gsutil -m rsync -R data/ $(GS_BUCKET)/data/
 
 sync_from_gs: ##@data Sincroniza los datos desde GCP GS
-	@gsutil -m rsync -R gs://$(GS_BUCKET)/data/ data/
+	@gsutil -m rsync -R $(GS_BUCKET)/data/ data/
 
 
 ########################################
@@ -142,7 +142,7 @@ HELP_FUN = \
 ## Verificando dependencias
 ## Basado en código de Fernando Cisneros @ datank
 
-EXECUTABLES = docker docker-compose docker-machine rg pip hub
+EXECUTABLES = docker docker-compose docker-machine rg pip
 TEST_EXEC := $(foreach exec,$(EXECUTABLES),\
 				$(if $(shell which $(exec)), some string, $(error "${BOLD}${RED}ERROR${RESET}: $(exec) is not in the PATH")))
 
