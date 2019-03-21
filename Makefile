@@ -22,9 +22,6 @@ SHELL := /bin/bash
 
 ## Airflow variables
 AIRFLOW_GPL_UNIDECODE := yes
-# AIRFLOW_HOME := $(pwd)/airflow_home
-AIRFLOW_HOME := infrastructure/airflow_home
-AIRFLOW_CONFIG := $(AIRFLOW_HOME)/airflow.cfg
 
 ########################################
 ##       Environment Tasks            ##
@@ -39,10 +36,15 @@ prepare: deps
 #pyenv: .python-version
 #	@pyenv install $(VERSION_PYTHON)
 
-deps: pip
+deps: pip db
 
 pip: requirements.txt
 	@pip install -r $<
+
+db:
+	@source .env
+	--directory=$(AIRFLOW_HOME)
+	@airflow initdb
 
 info:
 	@echo Project: $(PROJECT_NAME) ver. $(PROJECT_VERSION)

@@ -1,0 +1,42 @@
+from ollin18/senate_base_ubuntu
+
+MAINTAINER Ollin Demian Langle Chimal <ollin.langle@ciencias.unam.mx>
+
+ENV REFRESHED_AT 2017-11-26
+
+ADD http://dist.neo4j.org/neo4j-enterprise-3.3.1-unix.tar.gz /var/lib
+RUN tar -xzvf /var/lib/neo4j-enterprise-3.3.1-unix.tar.gz
+RUN mv neo4j-enterprise-3.3.1 /var/lib/neo4j
+
+WORKDIR /var/lib/neo4j
+
+VOLUME /data
+
+ADD http://dist.neo4j.org/jexp/shell/neo4j-shell-tools_3.0.1.zip  /var/lib/neo4j/lib
+
+RUN yes | unzip /var/lib/neo4j/lib/neo4j-shell-tools_3.0.1.zip -d /var/lib/neo4j/lib && rm /var/lib/neo4j/lib/*.zip
+
+RUN chmod +x /var/lib/neo4j/lib/*.jar
+
+WORKDIR /var/lib/neo4j
+
+RUN wget https://products.graphaware.com/download/nlp/graphaware-nlp-3.3.1.51.2.jar --directory-prefix=plugins
+RUN wget https://products.graphaware.com/download/nlp-open-nlp/nlp-opennlp-3.3.1.51.2.jar --directory-prefix=plugins
+RUN wget https://products.graphaware.com/download/nlp-stanford-nlp/nlp-stanfordnlp-3.3.1.51.2.jar --directory-prefix=plugins
+RUN wget https://products.graphaware.com/download/framework-server-enterprise/graphaware-server-enterprise-all-3.3.1.51.jar --directory-prefix=plugins
+
+RUN mkdir graphml
+
+RUN echo "dbms.unmanaged_extension_classes=com.graphaware.server=/graphaware" >> conf/neo4j.conf
+RUN echo "com.graphaware.runtime.enabled=true" >> conf/neo4j.conf
+RUN echo "com.graphaware.module.NLP.1=com.graphaware.nlp.module.NLPBootstrapper" >> conf/neo4j.conf
+RUN echo "dbms.security.procedures.whitelist=ga.nlp.*" >> conf/neo4j.conf
+
+VOLUME /data
+
+COPY docker-entrypoint.sh /tmp/docker-entrypoint.sh
+EXPOSE 7474 7473 7687
+
+ENTRYPOINT ["/tmp/docker-entrypoint.sh"]
+
+CMD ["neo4j"]
