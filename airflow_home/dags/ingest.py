@@ -23,13 +23,13 @@ dag = DAG('simple', default_args=default_args,
 opr_ingest = BashOperator(
         task_id='ingest',
         bash_command='python \
-        /home/ollin/Documentos/migration/migration-networks/src/ingest/asylum_seekers.py',
+        /home/ollin/Documentos/migration/migration-networks/common/ingest/src/asylum_seekers.py',
         dag = dag)
 
 opr_delimiter = BashOperator(
         task_id='delimiter',
         bash_command='sh \
-        /home/ollin/Documentos/migration/migration-networks/src/ingest/delimiter.sh ',
+        /home/ollin/Documentos/migration/migration-networks/common/ingest/src/delimiter.sh ',
         dag = dag)
 
 opr_ingest >> opr_delimiter

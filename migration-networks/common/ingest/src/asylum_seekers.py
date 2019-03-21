@@ -6,7 +6,6 @@ import os
 import string
 import csv
 
-#  path=os.getcwd()+"/../../data/"
 path="/home/ollin/Documentos/migration/data/"
 
 data = ["asylum_seekers_monthly.csv",
