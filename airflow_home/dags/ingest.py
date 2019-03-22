@@ -32,4 +32,10 @@ opr_delimiter = BashOperator(
         /home/ollin/Documentos/migration/migration-networks/common/ingest/src/delimiter.sh ',
         dag = dag)
 
-opr_ingest >> opr_delimiter
+opr_graph = BashOperator(
+        task_id='graph',
+        bash_command='zsh \
+        /home/ollin/Documentos/migration/migration-networks/common/ingest/src/to_graph.sh ',
+        dag = dag)
+
+opr_ingest >> opr_delimiter >> opr_graph
