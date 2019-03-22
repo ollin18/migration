@@ -7,7 +7,7 @@ export EDGEH=/home/ollin/Documentos/migration/data/edges/headers
 export EDGEL=/home/ollin/Documentos/migration/data/edges/list
 
 function printing {
-    awk 'BEGIN{FS="|"}{OFS="|"}NR>1{print $'$1'}' $2
+    awk 'BEGIN{FS=OFS="|"}NR>1{print $'$1'}' $2
 }
 
 #### Nodes
@@ -30,7 +30,7 @@ echo "Country:ID" > $NODEH/countries.csv
 
 # Location
 
-cat <(printing 3 $DATA/delim_demographics.csv) \
+printing 3 $DATA/delim_demographics.csv \
     | sort -u > $NODEL/location.csv
 
 echo "Location:ID" > $NODEH/location.csv
