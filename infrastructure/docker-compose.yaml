@@ -3,59 +3,20 @@ version: "3.5"
 services:
     neo4j:
         build:
-            dockerfile: Dockerfile.apoc
+            dockerfile: Dockerfile.db
             context: ./neo4j
         image: ollin18/migration:0.1
         container_name: migration_db
-        depends_on:
-            - scraper
         environment:
             - NEO4J_AUTH=none
         ports:
             - "7474:7474"
             - "7687:7687"
         volumes:
-            - ../DB/nodes/list:/nodes/list
-            - ../DB/edges/list:/edges/list
-            - ../DB/nodes/headers:/nodes/headers
-            - ../DB/edges/headers:/edges/headers
-            - ../Scraping/data:/datasc
-
-    scraper:
-        build:
-            dockerfile: Dockerfile.scrap
-            context: ../Scraping
-        image: ollin18/scraper:0.1
-        container_name: senate_scrap
-        volumes:
-            - ../Scraping/data:/data
-        command: ["src/execute.sh"]
-
-    netw:
-        build:
-            dockerfile: Dockerfile.net
-            context: ../Networks
-        image: ollin18/senate_net:0.1
-        container_name: senate_net
-        network_mode: "host"
-        depends_on:
-            - neo4j
-        volumes:
-            - ../Networks/data:/data
-            - ../Networks/figs:/figs
-        entrypoint:
-            - /wait-for-it.sh
-            - neo4j:7474
-            - --
-            - sh
-            - /src/execute.sh
-
-#networks:
-  ##need to move default network to a different subnet to avoid conflict with local subnet
-  #default:
-    #ipam:
-      #config:
-        #- subnet: 172.28.0.0/16
+            - ../data/nodes/list:/nodes/list
+            - ../data/edges/list:/edges/list
+            - ../data/nodes/headers:/nodes/headers
+            - ../data/edges/headers:/edges/headers
 
 volumes:
     data:

@@ -30,7 +30,9 @@ echo "Country:ID" > $NODEH/countries.csv
 
 # Location
 
-printing 3 $DATA/delim_demographics.csv \
+cat <(printing 3 $DATA/delim_demographics.csv) \
+    <(echo "0") \
+    | sed 's/||/|0|/g' | sed 's/||/|0|/g' | sed 's/*/0/g' \
     | sort -u > $NODEL/location.csv
 
 echo "Location:ID" > $NODEH/location.csv
@@ -52,11 +54,11 @@ printing '2,$1,$3,$4,$5"|MONTHLY"' $DATA/delim_asylum_seekers_monthly.csv \
     | sed 's/USA (INS\/DHS)/United States of America/g' \
     | sed 's/||/|0|/g' | sed 's/||/|0|/g' | sed 's/*/0/g' > $EDGEL/monthly.csv
 
-echo ":START_ID|:END_ID|Year|Month|:TYPE" > $EDGEH/monthly.csv
+echo ":START_ID|:END_ID|Year|Month|Seekers|:TYPE" > $EDGEH/monthly.csv
 
 # Demographics
 
-printing '2,$3,$1,$4,$5,$6,$7,$8,$9,$10,$11"|DEMOGRAPHICS"' $DATA/delim_demographics.csv \
+printing '2,$3,$1,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19"|DEMOGRAPHICS"' $DATA/delim_demographics.csv \
     | sed 's/||/|0|/g' | sed 's/||/|0|/g' | sed 's/*/0/g' > $EDGEL/demo.csv
 
 echo ":START_ID|:END_ID|Year|F(0-4)|F(5-11)|F(5-17)|F(12-17)|F(18-59)|F(60+)|F(Unknown)|F(Total)|M(0-4)|M(5-11)|M(5-17)|M(12-17)|M(18-59)|M(60+)|M(Unknown)|M(Total)|:TYPE" > $EDGEH/demo.csv
