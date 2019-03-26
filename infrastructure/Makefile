@@ -1,0 +1,2 @@
+init:
+	@docker-compose up

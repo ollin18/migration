@@ -41,10 +41,13 @@ deps: pip db
 pip: requirements.txt
 	@pip install -r $<
 
-db:
+airdb:
 	@source .env
 	--directory=$(AIRFLOW_HOME)
 	@airflow initdb
+
+neo4j:
+	@$(MAKE) --directory=infrastructure init
 
 info:
 	@echo Project: $(PROJECT_NAME) ver. $(PROJECT_VERSION)
