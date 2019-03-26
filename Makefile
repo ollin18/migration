@@ -36,7 +36,7 @@ prepare: deps
 #pyenv: .python-version
 #	@pyenv install $(VERSION_PYTHON)
 
-deps: pip db
+deps: pip airdb
 
 pip: requirements.txt
 	@pip install -r $<
