@@ -1,0 +1,112 @@
+---
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .Rmd
+      format_name: rmarkdown
+      format_version: '1.0'
+      jupytext_version: 0.8.6
+  kernelspec:
+    display_name: Python [conda env:meta]
+    language: python
+    name: conda-env-meta-py
+---
+
+```{python}
+import json
+import pandas as pd
+from fuzzywuzzy import process
+```
+
+```{python}
+
+```
+
+```{python}
+with open('countries.json','r') as f:
+    countries = json.loads(f.read())
+```
+
+```{python}
+asylum_seekers = pd.read_csv('data/clean/asylum_seekers.csv')
+```
+
+```{python}
+
+```
+
+```{python}
+countries2ID = {el['name']:el['country_code'] for el in countries}
+countries2ID["Bonaire"] = "BQ"
+```
+
+```{python}
+fix = {"Dem. Rep. of the Congo":"DR Congo",
+       "Congo":"Republic of the Congo",
+       "Russian Federation":"Russia",
+       "Serbia and Kosovo (S/RES/1244 (1999))" : "Kosovo",
+       "Rep. of Moldova" : "Moldova",
+       "Czech Rep.":"Czech Republic",
+       "Micronesia (Federated States of)":"Micronesia",
+       "Rep. of Korea":"South Korea",
+       "United States of America" : "United States",
+       "China, Macao SAR":"Macau",
+       "Central African Rep." : "Central African Republic",
+       "Lao People's Dem. Rep." : "Laos",
+       "Sint Maarten (Dutch part)":"Sint Maarten",
+       "The former Yugoslav Republic of Macedonia":"Macedonia",
+       "China, Hong Kong SAR":"Hong Kong",
+       "United Rep. of Tanzania" : "Tanzania",
+       "Dominican Rep." : "Dominica",
+       "Iran (Islamic Rep. of)":"Iran",
+       "Venezuela (Bolivarian Republic of)":"Venezuela",
+       "CuraÃ§ao":"Curaçao",
+       "Bolivia (Plurinational State of)":"Bolivia",
+       "Syrian Arab Rep." : "Syria",
+       "CÃ´te d'Ivoire":"Ivory Coast"
+      }
+for key,val in fix.items():
+    countries2ID[key] = countries2ID[val]
+```
+
+```{python}
+names = set(asylum_seekers['Country / territory of asylum/residence'].values)
+print(len(names))
+```
+
+```{python}
+available = set(countries2ID.keys())
+print(len(available))
+```
+
+```{python}
+missing = names.difference(available)
+print(missing)
+```
+
+```{python}
+choices = list(countries2ID.keys())
+for miss in missing:
+    guess = process.extractOne(miss, choices)
+    print('"{}" : "{}",'.format(miss, guess[0]))
+```
+
+```{python}
+
+```
+
+```{python}
+
+```
+
+```{python}
+process.extract("congo", choices, limit=3)
+```
+
+```{python}
+
+```
+
+```{python}
+
+```
