@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-FILES=/home/ollin/Documentos/migration/data/clean/
-rm $FILESd/delim*
+# FILES=$(pwd)/migration/data/clean/
+FILES=/data/clean/
+rm $FILES/delim*
 cd $FILES
 
 for file in $(pwd)/*; do

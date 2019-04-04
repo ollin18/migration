@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import urllib.request
@@ -6,7 +6,8 @@ import os
 import string
 import csv
 
-path="/home/ollin/Documentos/migration/data/"
+#  path=os.getcwd()+"/migration/data/"
+path="/data/"
 
 data = ["asylum_seekers_monthly.csv",
         "persons_of_concern.csv",
@@ -21,10 +22,10 @@ def get_file(files):
 def remove_header(files):
     n = 0
     with open(path+"raw/"+files,'rb') as fin,\
-            open(path+"clean/"+files, 'w') as fout:
+            open(path+"clean/"+files, 'wb') as fout:
         for line in fin:
             n += 1
-            line = line.decode('Latin-1')
+            line = line.decode('Latin-1').encode('utf-8')
             if n > 3:
                 fout.write(line)
 

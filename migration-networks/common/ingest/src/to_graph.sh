@@ -1,10 +1,16 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
 
-export DATA=/home/ollin/Documentos/migration/data/clean
-export NODEH=/home/ollin/Documentos/migration/data/nodes/headers
-export NODEL=/home/ollin/Documentos/migration/data/nodes/list
-export EDGEH=/home/ollin/Documentos/migration/data/edges/headers
-export EDGEL=/home/ollin/Documentos/migration/data/edges/list
+# export DATA=/home/ollin/Documentos/migration/data/clean
+# export NODEH=/home/ollin/Documentos/migration/data/nodes/headers
+# export NODEL=/home/ollin/Documentos/migration/data/nodes/list
+# export EDGEH=/home/ollin/Documentos/migration/data/edges/headers
+# export EDGEL=/home/ollin/Documentos/migration/data/edges/list
+
+export DATA=/data/clean
+export NODEH=/data/nodes/headers
+export NODEL=/data/nodes/list
+export EDGEH=/data/edges/headers
+export EDGEL=/data/edges/list
 
 function printing {
     awk 'BEGIN{FS=OFS="|"}NR>1{print $'$1'}' $2
