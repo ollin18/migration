@@ -46,9 +46,6 @@ airdb:
 	--directory=$(AIRFLOW_HOME)
 	@airflow initdb
 
-neo4j:
-	@$(MAKE) --directory=infrastructure init
-
 info:
 	@echo Project: $(PROJECT_NAME) ver. $(PROJECT_VERSION)
 	@python --version
@@ -84,6 +81,11 @@ destroy: ##@infrastructure Destruye la infrastructure
 nuke: ##@infrastructure Destruye la infrastructure (incluyendo las imágenes)
 	$(MAKE) --directory=infrastructure nuke
 
+neo4j:
+	@$(MAKE) --directory=infrastructure init
+
+ingest:
+	@$(MAKE) --directory=infrastructure ingester
 ########################################
 ##           Data Sync Tasks          ##
 ########################################
