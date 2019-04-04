@@ -1,14 +1,9 @@
 #! /usr/bin/env bash
 
-# export NODEH=/home/ollin/Documentos/migration/data/nodes/headers
-# export NODEL=/home/ollin/Documentos/migration/data/nodes/list
-# export EDGEH=/home/ollin/Documentos/migration/data/edges/headers
-# export EDGEL=/home/ollin/Documentos/migration/data/edges/list
-
-export NODEH=/nodes/headers
-export NODEL=/nodes/list
-export EDGEH=/edges/headers
-export EDGEL=/edges/list
+export NODEH=/data/nodes/headers
+export NODEL=/data/nodes/list
+export EDGEH=/data/edges/headers
+export EDGEL=/data/edges/list
 
 /var/lib/neo4j/bin/neo4j-admin import --mode=csv --delimiter="|" \
 	--ignore-duplicate-nodes=true \
