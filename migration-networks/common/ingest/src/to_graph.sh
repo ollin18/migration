@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-# export DATA=/home/ollin/Documentos/migration/data/clean
-# export NODEH=/home/ollin/Documentos/migration/data/nodes/headers
-# export NODEL=/home/ollin/Documentos/migration/data/nodes/list
-# export EDGEH=/home/ollin/Documentos/migration/data/edges/headers
-# export EDGEL=/home/ollin/Documentos/migration/data/edges/list
-
 export DATA=/data/clean
 export NODEH=/data/nodes/headers
 export NODEL=/data/nodes/list

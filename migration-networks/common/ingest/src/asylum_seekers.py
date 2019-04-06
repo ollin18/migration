@@ -8,7 +8,7 @@ import string
 import csv
 import pandas as pd
 
-path="./data/"
+path="/data/"
 #  import sys
 #  reload(sys)
 #  sys.setdefaultencoding('UTF8')
@@ -92,13 +92,12 @@ def clean_countries(files):
     df = df.replace({"Country / territory of asylum/residence": fix})
     if 'Origin' in df.columns:
         df = df.replace({"Origin": fix})
+        df = df[df['Origin'].isin(names)]
+    df = df[df['Country / territory of asylum/residence'].isin(names)]
     df.to_csv(path+"clean/"+files,index=False,header=False,sep="|")
-
-
 
 if __name__ == '__main__':
     for name in data:
         get_file(name)
         remove_header(name)
         clean_countries(name)
-
