@@ -52,6 +52,8 @@ info:
 	# @pyenv --version
 	@pip --version
 
+deldata:
+	@ yes | rm data/raw/* data/clean/* data/nodes/headers/* data/nodes/list/* data/edges/headers/* data/edges/list/*
 ########################################
 ##          Infrastructure            ##
 ##    	   Execution Tasks            ##
@@ -77,6 +79,7 @@ restart: ##@infrastructure Reinicializa la infrastructure
 
 destroy: ##@infrastructure Destruye la infrastructure
 	$(MAKE) --directory=infrastructure clean
+	@docker rmi ollin18/migration:0.1 ingest:latest
 
 nuke: ##@infrastructure Destruye la infrastructure (incluyendo las imágenes)
 	$(MAKE) --directory=infrastructure nuke

@@ -7,6 +7,8 @@ services:
             context: ./neo4j
         image: ollin18/migration:0.1
         container_name: migration_db
+        depends_on:
+            - ingest
         environment:
             - NEO4J_AUTH=none
         ports:
@@ -17,6 +19,16 @@ services:
             - ../data/edges/list:/edges/list
             - ../data/nodes/headers:/nodes/headers
             - ../data/edges/headers:/edges/headers
+    ingest:
+        build:
+            dockerfile: Dockerfile
+            context: ./ingest
+        image: ingest
+        container_name: ingester
+        volumes:
+            - ../data:/data
+            - ../migration-networks/common/ingest/src:/src
+        command: ["src/exe.sh"]
 
 volumes:
     data:

@@ -25,7 +25,7 @@ lon = list(map(lambda x: x[1],latlng))
 cols = {'Country':names,'Code':codes,'lat':lat,'lon':lon}
 
 Countries = pd.DataFrame.from_dict(cols)
-Countries.to_csv(path+"countries.csv",index=False,header=False,sep="|")
+Countries.to_csv(path+"clean/countries.csv",index=False,header=False,sep="|")
 
 fix = {"Dem. Rep. of the Congo":"DR Congo",
        "Congo":"Republic of the Congo",
@@ -95,6 +95,7 @@ def clean_countries(files):
         df = df[df['Origin'].isin(names)]
     df = df[df['Country / territory of asylum/residence'].isin(names)]
     df.to_csv(path+"clean/"+files,index=False,header=False,sep="|")
+
 
 if __name__ == '__main__':
     for name in data:
