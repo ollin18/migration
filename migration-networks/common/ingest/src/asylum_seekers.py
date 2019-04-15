@@ -25,6 +25,80 @@ lon = list(map(lambda x: x[1],latlng))
 cols = {'Country':names,'Code':codes,'lat':lat,'lon':lon}
 
 Countries = pd.DataFrame.from_dict(cols)
+
+with urllib.request.urlopen("https://query.data.world/s/ab2po6isxjxe25awy7eougitf3n5ga") as url:
+    i = 0
+    for line in url:
+        if i == 4:
+            columns = line.decode().replace("\"","").split(",")
+            columns.pop()
+            del columns[1:4]
+            pop = pd.DataFrame(columns=columns)
+            #  print(len(columns))
+        elif i > 4:
+            row = line.decode().replace("\"","").split(",")
+            if "PRK" in row[2]:
+                row[0] = "North Korea"
+            elif "KOR" in row[2]:
+                row[0] = "South Korea"
+            rowcp = row.copy()
+            row.pop()
+            del row[1:5]
+            if len(row) ==  58:
+            #  try:
+                #  print(len(row))
+                pop = pop.append(pd.Series(row,index=columns),ignore_index=True)
+            elif len(row) == 59:
+            #  except:
+                del row[1]
+                pop = pop.append(pd.Series(row,index=columns),ignore_index=True)
+        i += 1
+
+pop = pop.rename(index=str, columns={"Country Name":"Country"})
+for word in ["income","IBRD","only","total","blend","IDA","Not classified","members","World"]:
+    pop=pop[~pop.Country.str.contains(word)]
+
+drops = ["Arab World","Central Europe and the Baltics",
+        "Channel Islands","Caribbean small states",
+        'Early-demographic dividend','Latin America & Caribbean',
+        'East Asia & Pacific','Least developed countries: UN classification',
+        'Europe & Central Asia','European Union','Middle East & North Africa',
+        'Late-demographic dividend','North America','Other small states',
+        'Pre-demographic dividend','Pacific island small states',
+        'Post-demographic dividend','South Asia','Sub-Saharan Africa',
+        'Small states','West Bank and Gaza',
+        'Euro area','Fragile and conflict affected situations',
+        'Heavily indebted poor countries (HIPC)',
+        ]
+
+pop = pop[~pop["Country"].isin(drops)]
+
+fix_pop = {"Brunei Darussalam":"Brunei",
+       "Cote d'Ivoire":"Ivory Coast",
+       "Lao PDR":"Laos",
+       "Virgin Islands (U.S.)":"United States Virgin Islands",
+       "Syrian Arab Republic":"Syria",
+       "St. Vincent and the Grenadines":"Saint Vincent and the Grenadines",
+       "Sint Maarten (Dutch part)":"Sint Maarten",
+       "Slovak Republic":"Slovakia",
+       "Sao Tome and Principe":"São Tomé and Príncipe",
+       "Russian Federation":"Russia",
+       "St. Martin (French part)":"Saint Martin",
+       "St. Lucia":"Saint Lucia",
+       "St. Kitts and Nevis":"Saint Kitts and Nevis",
+       "Congo":"Republic of the Congo",
+       "Cabo Verde":"Cape Verde",
+       "Kyrgyz Republic":"Kyrgyzstan",
+       "Curacao":"Curaçao",
+       "Hong Kong SAR":"Hong Kong",
+       "Macao SAR":"Macau",
+       }
+
+pop = pop.replace({"Country": fix_pop})
+
+Countries = Countries.set_index("Country").join(pop.set_index("Country")).reset_index()
+list(Countries)
+
 Countries.to_csv(path+"clean/countries.csv",index=False,header=False,sep="|")
 
 fix = {"Dem. Rep. of the Congo":"DR Congo",
