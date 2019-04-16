@@ -1,5 +1,5 @@
 init:
-	@docker-compose up --build
+	@docker-compose up --build -d
 
 stop:
 	@docker-compose stop

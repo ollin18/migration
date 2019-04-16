@@ -9,9 +9,6 @@ import csv
 import pandas as pd
 
 path="/data/"
-#  import sys
-#  reload(sys)
-#  sys.setdefaultencoding('UTF8')
 
 with urllib.request.urlopen("https://gist.githubusercontent.com/erdem/8c7d26765831d0f9a8c62f02782ae00d/raw/248037cd701af0a4957cce340dabb0fd04e38f4c/countries.json") as url:
     countries = json.loads(url.read().decode())
@@ -34,22 +31,22 @@ with urllib.request.urlopen("https://query.data.world/s/ab2po6isxjxe25awy7eougit
             columns.pop()
             del columns[1:4]
             pop = pd.DataFrame(columns=columns)
-            #  print(len(columns))
         elif i > 4:
             row = line.decode().replace("\"","").split(",")
+            if "COG" in row[2]:
+                row[0] = "Congo"
+            if "COD" in row[2]:
+                row[0] = "DR Congo"
             if "PRK" in row[2]:
                 row[0] = "North Korea"
-            elif "KOR" in row[2]:
+            if "KOR" in row[2]:
                 row[0] = "South Korea"
             rowcp = row.copy()
             row.pop()
             del row[1:5]
             if len(row) ==  58:
-            #  try:
-                #  print(len(row))
                 pop = pop.append(pd.Series(row,index=columns),ignore_index=True)
             elif len(row) == 59:
-            #  except:
                 del row[1]
                 pop = pop.append(pd.Series(row,index=columns),ignore_index=True)
         i += 1
