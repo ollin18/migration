@@ -24,8 +24,6 @@ lapply(paquetines, library, character.only = TRUE)
 
 c = Connection("localhost";user="neo4j", password="")
 
-year = 2015
-
 query = """
 MATCH (to :Countries) <-[s :SEEKERS]-(from :Countries)
 WHERE s.Year='$year' AND toInt(s.Applied) > 0
@@ -38,24 +36,65 @@ ORDER BY Count DESC
 
 query2 = "MATCH ()<-[s :SEEKERS]-(from :Countries) WHERE s.Year='$year' RETURN SUM(toInt(s.Applied)) as Total, from.Country as From ORDER BY Total desc"
 
-results = cypherQuery(c, query)
-results2 = cypherQuery(c, query2)
+query3 = "MATCH (c :Countries) RETURN c.Country as Country"
 
-df = join(results, results2, on = :From)
-df[:Count] = df[:Count]./df[:Total]
-df[:Dist] = df[:Dist]./maximum(df[:Dist])
-df[:weight] = df[:Count].*df[:Dist]
+query4 = """
+MATCH (to :Countries) <-[s :SEEKERS]-(from :Countries)
+RETURN DISTINCT toInt(s.Year) as Year ORDER BY Year
+"""
+
+results3 = cypherQuery(c, query3)
+results4 = cypherQuery(c, query4)
+Countries = results3[:Country]
+Years = results4[:Year]
+
+function net_year(year)
+    year=year
+    query = """
+    MATCH (to :Countries) <-[s :SEEKERS]-(from :Countries)
+    WHERE s.Year='$year' AND toInt(s.Applied) > 0
+    WITH point({ longitude: toFloat(from.lon), latitude: toFloat(from.lat)}) AS p1,
+        point({ latitude: toFloat(to.lat), longitude: toFloat(to.lon)}) AS p2, to, s, from
+    WITH from.Country AS From, to.Country as To, sum(toInt(s.Applied)) as Count, round(distance(p1,p2)) as Dist
+    RETURN From, To, Count, Dist
+    ORDER BY Count DESC
+    """
+
+    query2 = "MATCH ()<-[s :SEEKERS]-(from :Countries) WHERE s.Year='$year' RETURN SUM(toInt(s.Applied)) as Total, from.Country as From ORDER BY Total desc"
+    results = cypherQuery(c, query)
+    results2 = cypherQuery(c, query2)
+    df = join(results, results2, on = :From)
+    df[:Count] = df[:Count]./df[:Total]
+    df[:Dist] = df[:Dist]./maximum(df[:Dist])
+    df[:weight] = df[:Count].*df[:Dist]
+    results = filter(x -> x[:weight] > 0, df)
+    g, Nodes, dic_nodes = lectura_unw(results,Countries)
+    g, Nodes, dic_nodes
+end
+
+
+for year in Years
+    if year != maximum(Years)
+        g1, Nodes, dic_nodes = net_year(year)
+        g2, Nodes, dic_nodes = net_year(year+1)
+    end
+    average_topological(g1,g2;how=outdegree)
+end
+
+
 
 #  results = filter(x -> x[:Count] > 0, df)
-results = filter(x -> x[:weight] > 0, df)
-
 #  asdf = bb[nonunique(bb[:, filter(x -> !(x in [:weight,:alpha]), names(bb))]),:]
 #  filter(x -> x[:from]=="1",bb)
 #  filter(x -> x[:to]=="1",bb)
 #  results[nonunique(results[:, filter(x -> !(x in [:Count]), names(results))]),:]
 
-g, Nodes, dic_nodes = lectura(results,:weight)
-g1, Nodes, dic_nodes = lectura_unw(results)
+g, Nodes, dic_nodes = lectura(results,:weight,Countries)
+g1, Nodes, dic_nodes = lectura_unw(results,Countries)
+#  g2, Nodes, dic_nodes = lectura_unw(results,Countries)
+
+average_topological(g1,g2;how=outdegree)
+
 
 @rput results
 @rput df
@@ -80,6 +119,8 @@ clus_lou = Int64.(cll[:membership])
 g2, Nodesn, dic_nodes = lectura_backbone(bb)
 Nodesn = @. parse(Int64,Nodesn)
 Nodes = Nodes[Nodesn]
+
+graphplot(g2,method=:stress,nodelabel=Nodes)
 
 com = communities(g2)
 #  com = communities(g2;matrix=ollin_reluctant)
