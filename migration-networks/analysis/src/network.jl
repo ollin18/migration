@@ -10,19 +10,32 @@ function useit(list::Array{Symbol})
         end
 end
 
-packages = [:OhMyREPL, :RCall, :SNAPDatasets, :Clustering, :LightGraphs, :SimpleWeightedGraphs, :Random, :GraphPlot, :Colors, :Plots, :GraphRecipes, :Statistics, :LinearAlgebra, :Arpack, :Neo4j, :RCall, :DataFrames, :StatsPlots]
+packages = [:OhMyREPL, :RCall, :SNAPDatasets, :Clustering, :LightGraphs, :SimpleWeightedGraphs, :Random, :GraphPlot, :Colors, :Plots, :GraphRecipes, :Statistics, :LinearAlgebra, :Arpack, :Neo4j, :RCall, :DataFrames, :StatsPlots,:PlotlyJS]
 useit(packages)
+include("temp_correlation.jl")
+include("readgraph.jl")
 
 reval("""
-paquetines <- c("stringi","reshape2","plyr","dplyr","tidyr","sets","plotly","readr",
+paquetines <- c("stringi","reshape2","plyr","dplyr","tidyr","sets","plotly","readr","scales","data.table","plotly",
                 "ggplot2","igraph","lubridate","e1071","useful","magrittr","gower","cluster","RNeo4j","disparityfilter",
-                "factoextra","NbClust","readr","DescTools","gridExtra","egg")
+                "factoextra","NbClust","readr","DescTools","gridExtra","egg","htmlwidgets")
 no_instalados <- paquetines[!(paquetines %in% installed.packages()[,"Package"])]
 if(length(no_instalados)) install.packages(no_instalados, repos='http://cran.us.r-project.org')
 lapply(paquetines, library, character.only = TRUE)
 """)
 
 c = Connection("localhost";user="neo4j", password="")
+
+year = 2010
+
+#  MATCH (c :Countries) RETURN c.Country as C, c.\`'2000'\` as pop
+#  MATCH (c :Countries) RETURN keys(c)
+q = """
+MATCH (c :Countries)
+RETURN c.Country as C, (c.\`'2000'\`) as pop
+"""
+cypherQuery(c, q) |>
+        x -> x[:pop]
 
 query = """
 MATCH (to :Countries) <-[s :SEEKERS]-(from :Countries)
@@ -48,7 +61,7 @@ results4 = cypherQuery(c, query4)
 Countries = results3[:Country]
 Years = results4[:Year]
 
-function net_year(year)
+function net_year(year;weighted=true)
     year=year
     query = """
     MATCH (to :Countries) <-[s :SEEKERS]-(from :Countries)
@@ -68,19 +81,161 @@ function net_year(year)
     df[:Dist] = df[:Dist]./maximum(df[:Dist])
     df[:weight] = df[:Count].*df[:Dist]
     results = filter(x -> x[:weight] > 0, df)
-    g, Nodes, dic_nodes = lectura_unw(results,Countries)
+    if weighted
+        g, Nodes, dic_nodes = lectura(results,:weight,Countries)
+    else
+        g, Nodes, dic_nodes = lectura_unw(results,Countries)
+    end
     g, Nodes, dic_nodes
 end
 
-
-for year in Years
-    if year != maximum(Years)
-        g1, Nodes, dic_nodes = net_year(year)
-        g2, Nodes, dic_nodes = net_year(year+1)
+let
+    global av_out = Array{Float64}(undef,length(Years)-1)
+    global av_in = Array{Float64}(undef,length(Years)-1)
+    global av_all = Array{Float64}(undef,length(Years)-1)
+    global av_uw_out = Array{Float64}(undef,length(Years)-1)
+    global av_uw_in = Array{Float64}(undef,length(Years)-1)
+    global av_uw_all = Array{Float64}(undef,length(Years)-1)
+    for year in enumerate(Years)
+        if year[2] != maximum(Years)
+            g1, Nodes, dic_nodes = net_year(year[2])
+            g2, Nodes, dic_nodes = net_year(year[2]+1)
+            av_out[year[1]] = average_topological_w(g1,g2;how=outdegree)
+            av_in[year[1]] = average_topological_w(g1,g2;how=indegree)
+            av_all[year[1]] = average_topological_w(g1,g2;how=degree)
+            av_uw_out[year[1]] = average_topological(g1,g2;how=outdegree)
+            av_uw_in[year[1]] = average_topological(g1,g2;how=indegree)
+            av_uw_all[year[1]] = average_topological(g1,g2;how=degree)
+        end
     end
-    average_topological(g1,g2;how=outdegree)
+    av_out,av_in,av_all,av_uw_in,av_uw_out,av_uw_all
 end
 
+function harm_mean(set)
+    below = sum(@. 1/set)
+    length(set)/below
+end
+
+function harm_mean(a,b)
+    set = [a,b]
+    below = sum(@. 1/set)
+    length(set)/below
+end
+
+mean(av_uw_out)
+mean(av_uw_in)
+mean(av_uw_all)
+
+mean(av_out)
+mean(av_in)
+mean(av_all)
+
+broadcast(harm_mean,av_out,av_uw_out) |> mean
+broadcast(harm_mean,av_in,av_uw_in) |> mean
+broadcast(harm_mean,av_all,av_uw_all) |> mean
+
+let
+    global av_out = Array{Float64}(undef,length(Years)-1)
+    global av_in = Array{Float64}(undef,length(Years)-1)
+    global av_all = Array{Float64}(undef,length(Years)-1)
+    global av_uw_out = Array{Float64}(undef,length(Years)-1)
+    global av_uw_in = Array{Float64}(undef,length(Years)-1)
+    global av_uw_all = Array{Float64}(undef,length(Years)-1)
+    for year in enumerate(Years)
+        if year[2] != maximum(Years)
+            g1, Nodes, dic_nodes = net_year(year[2])
+            g2, Nodes, dic_nodes = net_year(year[2]+1)
+            av_out[year[1]] = average_topological_w(g1,g2;how=outdegree)
+            av_in[year[1]] = average_topological_w(g1,g2;how=indegree)
+            av_all[year[1]] = average_topological_w(g1,g2;how=degree)
+            av_uw_out[year[1]] = average_topological(g1,g2;how=outdegree)
+            av_uw_in[year[1]] = average_topological(g1,g2;how=indegree)
+            av_uw_all[year[1]] = average_topological(g1,g2;how=degree)
+        end
+    end
+    av_out,av_in,av_all,av_uw_in,av_uw_out,av_uw_all
+end
+
+g1, Nodes, dic_nodes = net_year(2015)
+g2, Nodes, dic_nodes = net_year(2016)
+
+outdeg = map(x-> topological_overlap_w(g1,g2,x;how=outdegree),vertices(g1)) |>
+        x -> replace!(x,NaN=>1)
+
+map(x-> topological_overlap_w(g1,g2,x),vertices(g1)) |>
+        x -> replace!(x,NaN=>0)
+
+aaa = sortslices(hcat(Nodes,outdeg), dims=1,by=x->x[2],rev=true)
+aaa[aaa[:,1] .== "Mexico",:]
+
+
+
+let
+    global co_out = Array{Array}(undef,length(Years)-1)
+    global co_in = Array{Array}(undef,length(Years)-1)
+    global co_all = Array{Array}(undef,length(Years)-1)
+    global co_uw_out = Array{Array}(undef,length(Years)-1)
+    global co_uw_in = Array{Array}(undef,length(Years)-1)
+    global co_uw_all = Array{Array}(undef,length(Years)-1)
+    for year in enumerate(Years)
+        if year[2] != maximum(Years)
+            g1, Nodes, dic_nodes = net_year(year[2])
+            g2, Nodes, dic_nodes = net_year(year[2]+1)
+            co_out[year[1]]    = map(x->topological_overlap_w(g1,g2,x;how=outdegree),vertices(g1))
+            co_in[year[1]]     = map(x->topological_overlap_w(g1,g2,x;how=indegree),vertices(g1))
+            co_all[year[1]]    = map(x->topological_overlap_w(g1,g2,x;how=degree),vertices(g1))
+            co_uw_out[year[1]] = map(x->topological_overlap(g1,g2,x;how=outdegree),vertices(g1))
+            co_uw_in[year[1]]  = map(x->topological_overlap(g1,g2,x;how=indegree),vertices(g1))
+            co_uw_all[year[1]] = map(x->topological_overlap(g1,g2,x;how=degree),vertices(g1))
+        end
+    end
+    co_out,co_in,co_all,co_uw_in,co_uw_out,co_uw_all
+end
+
+histogram2d(randn(1000), randn(1000),nbins=20)
+z = float((1:4) * reshape(1:10, 1, :))
+Yearss = Years[2:end]
+vals = transpose(hcat(co_out...))
+
+@rput Countries
+@rput Yearss
+@rput vals
+
+reval("""
+      valores <- data.frame(vals)
+      rownames(valores)<-Yearss
+      colnames(valores)<-Countries
+      """)
+
+reval("setDT(valores,keep.rownames=TRUE)")
+reval("valores\$rn[1:3]")
+reval("valores.m <- melt(valores)")
+reval("colnames(valores.m)<-c('Year','Country','Correlation')")
+
+reval("""
+      p<-ggplot(valores.m,aes(Year,Country)) +
+      geom_tile(aes(fill=Correlation),color="white")+
+      ggtitle("Topological Overlap Outdegree")+
+      scale_fill_gradient(low = "lightblue",high = "darkblue",na.value="black",limits=c(0,1))+
+      theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1, colour = "grey50"),
+      axis.text.y = element_text(size = 2, angle = 45, hjust = 1, colour = "grey50"))
+      ggsave("/home/ollin/Documentos/migration/migration-networks/analysis/figs/topological_overlap_out.pdf")
+      ggp <- ggplotly(p) %>% config(displayModeBar = F)
+      ggp_build <- plotly_build(ggp)
+      htmlwidgets::saveWidget(as_widget(ggp_build), "/home/ollin/Documentos/migration/migration-networks/analysis/figs/topological_overlap_out.html")
+      """)
+
+vals
+Years[1:end-1]
+heatmap(Countries,Years[1:end-1],vals,color=:blues)
+
+plotlyjs()
+pyplot()
+
+heatmap(Years[2:end],Countries,vals',color=:blues,yticks=1:247,ylabel=Countries)#,xticks = Years[2:end],xrotation=45)
+heatmap(Years[2:end],Countries,vals',color=:blues,xticks=Years[2:end],xrotation=45)
+plot!(xticks = Years[2:end],xtickfont = font(8,"Courier"),xrotation=45)
+plot!(yticks = Countries)#,ytickfont = font(1,"Courier"))
 
 
 #  results = filter(x -> x[:Count] > 0, df)

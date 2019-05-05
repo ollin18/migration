@@ -1,0 +1,223 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>SEGS</title>
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/white.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+                            <section>
+                                <section>
+                                    <h1 style="font-size: 120%;">Behavioral Segmentation</h1>
+                                    <p style="z-index: 11; font-size: 80%;">ADBCAP  02/07/2019</p>
+                                    <p style="z-index: 11; font-size: 88%;">Ollin Demian Langle Chimal</p>
+                                    <p style="font-size: 70%;">Complex Systems and Data Science, PhD student</p>
+                                </section>
+                            </section>
+                                <section>
+                                    <section>
+                                        <h1 style="font-size: 120%;">Proportion of biosecurity adoption</h1>
+                                    </section>
+                                    <section>
+                                        <!-- <p class="fragment shrink" data-fragment-index="1"> -->
+                                        <!--     <h1 style="font-size: 120%;">Adoption by treatment type</h1> -->
+                                        <!-- </p> -->
+                                        <!-- <p class="fragment shrink" data-fragment-index="1" height="300" width="500"> -->
+                                            <img data-src="figs/violin_adoption_treatment_type.png" height="500" width="800">
+                                        <!-- </p> -->
+                                        <!-- <p class="fragment fade-in" data-fragment-index="1"> -->
+                                        <table class="reveal" style="font-size: 50%;">
+                                            <thead><tr>
+                                                <th></th>
+                                                <th>LBL</th>
+                                                <th>HBL</th>
+                                                <th>LBU</th>
+                                                <th>HBU</th>
+                                                <th>LCR</th>
+                                                <th>HCR</th>
+                                                <th>LDU</th>
+                                                <th>HDU</th>
+                                            </tr></thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Mean P-value</td>
+                                                    <td>0.0136</td>
+                                                    <td>0.0004</td>
+                                                    <td>0.0003</td>
+                                                    <td>0.0166</td>
+                                                    <td>0.0000</td>
+                                                    <td>0.9281</td>
+                                                    <td>0.0194</td>
+                                                    <td>0.0002</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Cross P-value</td>
+                                                    <td>0.2606</td>
+                                                    <td>0.1980</td>
+                                                    <td>0.1005</td>
+                                                    <td>0.1294</td>
+                                                    <td>2.00e-14</td>
+                                                    <td>1.47e-09</td>
+                                                    <td>0.1381</td>
+                                                    <td>0.0887</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <!-- </p> -->
+                                    </section>
+<!-- ################################################################################## -->
+                                    <section>
+                                        <div class="row">
+                                            <div class="column2">
+                                                <img data-src="figs/scatter_biolevel.png" height="250" width="500">
+                                            </div>
+                                            <div class="column2">
+                                                <img data-src="figs/scatter_biosecurityuncer.png" height="250" width="500">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="column2">
+                                                <img data-src="figs/scatter_contagionrate.png" height="250" width="500">
+                                            </div>
+                                            <div class="column2">
+                                                <img data-src="figs/scatter_diseaseun.png" height="250" width="500">
+                                            </div>
+                                        </div>
+                                    </section>
+<!-- ################################################################################## -->
+                                    <section>
+                                        <div class="column2">
+                                            <img data-src="figs/violin_treatment_type.png" height="500" width="1000">
+                                        </div>
+                                        <div class="column2">
+                                            <img data-src="figs/game_treatment.png" height="500" width="1000">
+                                        </div>
+                                    </section>
+                                    <section>
+                                            <img data-src="figs/grid1.png" height="500" width="1000">
+                                    </section>
+                                </section>
+                                <section>
+                                    <section>
+                                        <h3 class="fragment grow" data-fragment-index="1">Why Low biosecurity adoption?</h3>
+                                        <p class="fragment fade-in" data-fragment-index="1">
+                                            More pronounced differences
+                                        </p>
+                                    </section>
+                                    <section align="center" data-background-iframe="figs/chart_low_to_medium.html"></section>
+                                </section>
+                                <section>
+                                    <section>
+                                        <h1>Multi Dimensional Scaling</h1>
+                                    </section>
+                                    <section>
+                                        <h4>MDS</h4>
+                                        <p style="z-index: 11; font-size: 70%;">What is it?</p>
+                                        <p style="z-index: 6; font-size: 60%;">A form of non-linear dimensionality reduction based on a distance matrix</p>
+                                        <img data-src="http://olangle.w3.uvm.edu/random/presfigs/mds_lowbio.png" height="600" width="600">
+                                    </section>
+                                    <section data-background-iframe="figs/chart_adoption_infection.html">
+                                    </section>
+                                    <section>
+                                         <div class="sl-block" data-block-type="image" style="min-width: 4px; min-height: 4px; width: 100px; height: 50px; left: 0px; top: 0px;">
+                                            <div class="sl-block-content" style="z-index: 11;">
+                                                <img style="" data-natural-width="1200" data-natural-height="630" data-lazy-loaded="" data-src="figs/2dproj.png"/>
+                                            </div>
+                                        </div>
+                                        <h1 style="font-size: 120%;">Month Adoption by Treatment</h1>
+                                        <div class="row">
+                                            <div class="column2">
+                                                <img data-src="figs/violin_positive_left_low.png" height="230" width="500">
+                                            </div>
+                                            <div class="column2">
+                                                <img data-src="figs/violin_positive_right_low.png" height="230" width="500">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="column2">
+                                                <img data-src="figs/violin_negative_left_low.png" height="230" width="500">
+                                            </div>
+                                            <div class="column2">
+                                                <img data-src="figs/violin_negative_right_low.png" height="230" width="500">
+                                            </div>
+                                        </div>
+                                    </section>
+                                    <section>
+                                         <div class="sl-block" data-block-type="image" style="min-width: 4px; min-height: 4px; width: 100px; height: 50px; left: 0px; top: 0px;">
+                                            <div class="sl-block-content" style="z-index: 11;">
+                                                <img style="" data-natural-width="1200" data-natural-height="630" data-lazy-loaded="" data-src="figs/top_left.png"/>
+                                            </div>
+                                        </div>
+                                        <p style="z-index: 11; font-size: 70%;">Always Adopting</p>
+                                        <img data-src="figs/lines_positive_left_low.png" height="400" width="800">
+                                    </section>
+                                    <section>
+                                         <div class="sl-block" data-block-type="image" style="min-width: 4px; min-height: 4px; width: 100px; height: 50px; left: 0px; top: 0px;">
+                                            <div class="sl-block-content" style="z-index: 11;">
+                                                <img style="" data-natural-width="1200" data-natural-height="630" data-lazy-loaded="" data-src="figs/top_right.png"/>
+                                            </div>
+                                        </div>
+                                        <p style="z-index: 11; font-size: 70%;">Non-adopting Learners</p>
+                                        <img data-src="figs/lines_positive_right_low.png" height="400" width="800">
+                                    </section>
+                                    <section>
+                                         <div class="sl-block" data-block-type="image" style="min-width: 4px; min-height: 4px; width: 100px; height: 50px; left: 0px; top: 0px;">
+                                            <div class="sl-block-content" style="z-index: 11;">
+                                                <img style="" data-natural-width="1200" data-natural-height="630" data-lazy-loaded="" data-src="figs/bottom_left.png"/>
+                                            </div>
+                                        </div>
+                                        <p style="z-index: 11; font-size: 70%;">Adopting Learners</p>
+                                        <img data-src="figs/lines_negative_left_low.png" height="400" width="800">
+                                    </section>
+                                    <section>
+                                         <div class="sl-block" data-block-type="image" style="min-width: 4px; min-height: 4px; width: 100px; height: 50px; left: 0px; top: 0px;">
+                                            <div class="sl-block-content" style="z-index: 11;">
+                                                <img style="" data-natural-width="1200" data-natural-height="630" data-lazy-loaded="" data-src="figs/bottom_right.png"/>
+                                            </div>
+                                        </div>
+                                        <p style="z-index: 11; font-size: 70%;">Never Adopting</p>
+                                        <img data-src="figs/lines_negative_right_low.png" height="400" width="800">
+                                    </section>
+                                </section>
+                            </section>
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			// - https://github.com/hakimel/reveal.js#dependencies
+			Reveal.initialize({
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/highlight/type.js' }
+				]
+			});
+                        Reveal.configure({ slideNumber: true });
+		</script>
+	</body>
+</html>
