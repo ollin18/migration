@@ -30,12 +30,12 @@ year = 2010
 
 #  MATCH (c :Countries) RETURN c.Country as C, c.\`'2000'\` as pop
 #  MATCH (c :Countries) RETURN keys(c)
-q = """
-MATCH (c :Countries)
-RETURN c.Country as C, (c.\`'2000'\`) as pop
-"""
-cypherQuery(c, q) |>
-        x -> x[:pop]
+#  q = """
+#  MATCH (c :Countries)
+#  RETURN c.Country as C, (c.\`'2000'\`) as pop
+#  """
+#  cypherQuery(c, q) |>
+#          x -> x[:pop]
 
 query = """
 MATCH (to :Countries) <-[s :SEEKERS]-(from :Countries)
@@ -79,7 +79,7 @@ function net_year(year;weighted=true)
     df = join(results, results2, on = :From)
     df[:Count] = df[:Count]./df[:Total]
     df[:Dist] = df[:Dist]./maximum(df[:Dist])
-    df[:weight] = df[:Count].*df[:Dist]
+    df[:weight] = df[:Count]#.*df[:Dist]
     results = filter(x -> x[:weight] > 0, df)
     if weighted
         g, Nodes, dic_nodes = lectura(results,:weight,Countries)
@@ -192,37 +192,66 @@ let
     co_out,co_in,co_all,co_uw_in,co_uw_out,co_uw_all
 end
 
+g1, Nodes, dic_nodes = net_year(2010)
 histogram2d(randn(1000), randn(1000),nbins=20)
 z = float((1:4) * reshape(1:10, 1, :))
 Yearss = Years[2:end]
 vals = transpose(hcat(co_out...))
+valss = transpose(hcat(co_in...))
 
+nona = vals |> x -> filter(x,!isnan)
+#  vals2 = vals |>
+#  mean_top = mean(vals[isnan.(vals)],dims=1)
+mean_top1 = sum(vals,dims=1)./17
+mean_top2 = sum(valss,dims=1)./17
+mean_top = vcat(mean_top1,mean_top2)
+
+Countries = Nodes
 @rput Countries
 @rput Yearss
 @rput vals
+@rput mean_top
 
 reval("""
       valores <- data.frame(vals)
       rownames(valores)<-Yearss
       colnames(valores)<-Countries
+
+      valores2 <- data.frame(mean_top)
+      rownames(valores2) <- c("Outdegree","Indegree")
+      colnames(valores2) <- Countries
       """)
 
 reval("setDT(valores,keep.rownames=TRUE)")
+reval("setDT(valores2,keep.rownames=TRUE)")
 reval("valores\$rn[1:3]")
 reval("valores.m <- melt(valores)")
+reval("valores2.m <- melt(valores2)")
 reval("colnames(valores.m)<-c('Year','Country','Correlation')")
+reval("colnames(valores2.m)<-c('Overlap','Country','Correlation')")
 
 reval("""
       p<-ggplot(valores.m,aes(Year,Country)) +
       geom_tile(aes(fill=Correlation),color="white")+
-      ggtitle("Topological Overlap Outdegree")+
+      ggtitle("Topological Overlap Indegree")+
       scale_fill_gradient(low = "lightblue",high = "darkblue",na.value="black",limits=c(0,1))+
       theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1, colour = "grey50"),
-      axis.text.y = element_text(size = 2, angle = 45, hjust = 1, colour = "grey50"))
-      ggsave("/home/ollin/Documentos/migration/migration-networks/analysis/figs/topological_overlap_out.pdf")
+      axis.text.y = element_text(size = 4, angle = 45, hjust = 1, colour = "grey50"))
+      ggsave("/home/ollin/Documentos/migration/migration-networks/analysis/figs/topological_overlap_in_nodist.pdf")
       ggp <- ggplotly(p) %>% config(displayModeBar = F)
       ggp_build <- plotly_build(ggp)
-      htmlwidgets::saveWidget(as_widget(ggp_build), "/home/ollin/Documentos/migration/migration-networks/analysis/figs/topological_overlap_out.html")
+      htmlwidgets::saveWidget(as_widget(ggp_build), "/home/ollin/Documentos/migration/migration-networks/analysis/figs/topological_overlap_in_nodist.html")
+
+      #  p2<-ggplot(valores2.m,aes(Overlap,Country)) +
+      #  geom_tile(aes(fill=Correlation),color="white")+
+      #  ggtitle("Mean Topological Overlap")+
+      #  scale_fill_gradient(low = "lightblue",high = "darkblue",na.value="black",limits=c(0,1))+
+      #  theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1, colour = "grey50"),
+      #  axis.text.y = element_text(size = 4, angle = 45, hjust = 1, colour = "grey50"))
+      #  ggsave("/home/ollin/Documentos/migration/migration-networks/analysis/figs/mean_topological_overlap_nodist.pdf")
+      #  ggp <- ggplotly(p2) %>% config(displayModeBar = F)
+      #  ggp_build <- plotly_build(ggp)
+      #  htmlwidgets::saveWidget(as_widget(ggp_build), "/home/ollin/Documentos/migration/migration-networks/analysis/figs/mean_topological_overlap_nodist.html")
       """)
 
 vals

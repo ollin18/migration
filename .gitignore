@@ -1,4 +1,7 @@
 *.csv
+*.gif
+*.pdf
+*.html
 *.png
 *.db
 *.pid
