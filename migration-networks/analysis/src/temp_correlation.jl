@@ -16,12 +16,19 @@ function topological_overlap_w(g1,g2,i;how=degree)
     if how == indegree || how == degree
         tm = Matrix(weights(g1))[:,i]
         tm1 = Matrix(weights(g2))[:,i]
+
+        am = Matrix(adjacency_matrix(g1))[:,i]
+        am1 = Matrix(adjacency_matrix(g2))[:,i]
     else
         tm = Matrix(weights(g1))[i,:]
         tm1 = Matrix(weights(g2))[i,:]
+
+        am = Matrix(adjacency_matrix(g1))[i,:]
+        am1 = Matrix(adjacency_matrix(g2))[i,:]
     end
-    upper = sum(tm .* tm1)
-    lower = sqrt(sum(tm)*sum(tm1))
+    dife = tm1 .- tm
+    upper = sum(am .* am1 .* dife)
+    lower = sqrt(sum(am)*sum(am1)*abs(sum(dife)))
     upper/lower
 end
 
