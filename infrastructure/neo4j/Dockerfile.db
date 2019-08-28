@@ -1,4 +1,4 @@
-from ollin18/senate_base_ubuntu
+from ollin18/base:0.1
 
 MAINTAINER Ollin Demian Langle Chimal <Ollin.Langle@uvm.edu>
 
