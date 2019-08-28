@@ -9,6 +9,9 @@
 ##            Variables               ##
 ########################################
 
+## Project Directory
+PROJ_DIR:=$(shell pwd)
+
 PROJECT_NAME:=$(shell cat .project-name)
 PROJECT_VERSION:=$(shell cat .project-version)
 
@@ -47,13 +50,17 @@ airdb:
 	@airflow initdb
 
 info:
-	@echo Project: $(PROJECT_NAME) ver. $(PROJECT_VERSION)
+	@echo Project: $(PROJECT_NAME) ver. $(PROJECT_VERSION) in $(PROJ_DIR)
 	@python --version
 	# @pyenv --version
 	@pip --version
 
 deldata:
 	@ yes | rm data/raw/* data/clean/* data/nodes/headers/* data/nodes/list/* data/edges/headers/* data/edges/list/*
+
+getdata:
+	@docker run --rm -v $(PROJ_DIR)/data:/data -v $(PROJ_DIR)/migration-networks/common/ingest/src/:/src ingest /src/asylum_seekers.py
+
 ########################################
 ##          Infrastructure            ##
 ##    	   Execution Tasks            ##
