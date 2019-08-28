@@ -96,6 +96,9 @@ neo4j:
 
 ingest:
 	@$(MAKE) --directory=infrastructure ingester
+
+dockerbuild:
+	@$(MAKE) --directory=infrastructure build
 ########################################
 ##           Data Sync Tasks          ##
 ########################################

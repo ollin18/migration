@@ -5,6 +5,9 @@ init:
 stop:
 	@docker-compose stop
 
+build:
+	@docker-compose build
+
 clean:
 	@docker-compose rm
 
