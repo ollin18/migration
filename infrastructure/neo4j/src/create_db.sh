@@ -9,8 +9,11 @@ export EDGEL=/edges/list
 	--ignore-duplicate-nodes=true \
     --database=migration.db \
 	--nodes:Countries "$NODEH/countries.csv,$NODEL/countries.csv" \
+	--nodes:Years "$NODEH/years.csv,$NODEL/years.csv" \
 	--nodes:Location "$NODEH/location.csv,$NODEL/location.csv"\
 	--relationships "$EDGEH/seekers.csv,$EDGEL/seekers.csv" \
+	--relationships "$EDGEH/population.csv,$EDGEL/population.csv" \
+	--relationships "$EDGEH/gdp.csv,$EDGEL/gdp.csv" \
 	--relationships "$EDGEH/monthly.csv,$EDGEL/monthly.csv" \
 	--relationships "$EDGEH/demo.csv,$EDGEL/demo.csv" \
 	--relationships "$EDGEH/concern.csv,$EDGEL/concern.csv" \

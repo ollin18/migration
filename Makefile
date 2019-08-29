@@ -59,7 +59,7 @@ deldata:
 	@ yes | rm data/raw/* data/clean/* data/nodes/headers/* data/nodes/list/* data/edges/headers/* data/edges/list/*
 
 getdata:
-	@docker run --rm -v $(PROJ_DIR)/data:/data -v $(PROJ_DIR)/migration-networks/common/ingest/src/:/src ingest /src/asylum_seekers.py
+	@docker run --rm -v $(PROJ_DIR)/data:/data -v $(PROJ_DIR)/migration-networks/common/ingest/src/:/src ingest /src/exe.sh
 
 ########################################
 ##          Infrastructure            ##
@@ -94,6 +94,8 @@ nuke: ##@infrastructure Destruye la infrastructure (incluyendo las imágenes)
 neo4j:
 	@$(MAKE) --directory=infrastructure init
 
+neo4jrebuild:
+	@$(MAKE) --directory=infrastructure rebuild
 ingest:
 	@$(MAKE) --directory=infrastructure ingester
 

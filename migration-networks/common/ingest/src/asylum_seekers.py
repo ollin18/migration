@@ -4,6 +4,7 @@
 import urllib.request
 import zipfile
 import requests
+from time import strptime
 import io
 import os
 import json
@@ -22,7 +23,7 @@ latlng = list(map(lambda x: x['latlng'],countries))
 lat = list(map(lambda x: x[0],latlng))
 lon = list(map(lambda x: x[1],latlng))
 
-cols = {'Country':names,'lat':lat,'lon':lon}
+cols = {'Country':names,'lat':lat,'lon':lon,'co':codes}
 
 Countries = pd.DataFrame.from_dict(cols)
 
@@ -139,12 +140,19 @@ gdp = gdp.replace({"Country": fix_pop})
 gdp = gdp.replace({"Code": {"XKX":"KSV"}})
 
 Countries_pop = Countries.set_index("Country").join(pop.set_index("Country")).reset_index()
-Countries_pop = Countries_pop.drop("2016",axis=1)
+Countries_pop["Code"] = Countries_pop["Code"].fillna(Countries_pop["co"])
+Countries_pop = Countries_pop.drop(["2016","co"],axis=1)
+popu = pd.melt(Countries_pop.drop(["Code","lat","lon"],axis=1),id_vars=['Country']).fillna(0)
 
 Countries_gdp = Countries.set_index("Country").join(gdp.set_index("Country")).reset_index()
+Countries_gdp["Code"] = Countries_gdp["Code"].fillna(Countries_gdp["co"])
+Countries_gdp = Countries_gdp.drop("co",axis=1)
+gdp = pd.melt(Countries_gdp.drop(["Code","lat","lon"],axis=1),id_vars=['Country']).fillna(0)
 
 Countries_pop.to_csv(path+"/clean/countries_pop.csv",index=False,header=False,sep="|")
+popu.to_csv(path+"/clean/population.csv",index=False,header=False,sep="|")
 Countries_gdp.to_csv(path+"/clean/countries_gdp.csv",index=False,header=False,sep="|")
+gdp.to_csv(path+"/clean/gdp.csv",index=False,header=False,sep="|")
 
 fix = {"Dem. Rep. of the Congo":"DR Congo",
        "Congo":"Republic of the Congo",
@@ -213,6 +221,8 @@ def clean_countries(files):
         df = df.replace({"Origin": fix})
         df = df[df['Origin'].isin(names)]
     df = df[df['Country / territory of asylum/residence'].isin(names)]
+    if 'Month' in df.columns:
+        df["Month"] = df.Month.map(lambda x: strptime(x,'%B')[1])
     df.to_csv(path+"/clean/"+files,index=False,header=False,sep="|")
 
 

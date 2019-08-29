@@ -1,4 +1,5 @@
 anaconda3
+*.done
 *.csv
 *.gif
 *.pdf

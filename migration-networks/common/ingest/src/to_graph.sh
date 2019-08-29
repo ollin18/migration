@@ -14,20 +14,16 @@ function printing {
 
 # Countries
 
-# cat <(printing 2 $DATA/asylum_seekers.csv) \
-#     <(printing 3 $DATA/asylum_seekers.csv) \
-#     <(printing 1 $DATA/asylum_seekers_monthly.csv) \
-#     <(printing 2 $DATA/asylum_seekers_monthly.csv) \
-#     <(printing 2 $DATA/demographics.csv) \
-#     <(printing 2 $DATA/persons_of_concern.csv) \
-#     <(printing 3 $DATA/persons_of_concern.csv) \
-#     <(printing 1 $DATA/resettlement.csv) \
-#     <(printing 2 $DATA/resettlement.csv) \
-#     | sed -e '/USA/c\United States of America' \
-#     | sort -u > $NODEL/countries.csv
-cp $DATA/countries.csv $NODEL/countries.csv
+awk 'BEGIN{FS=OFS="|"}{print $1,$4,$2,$3}' $DATA/countries_gdp.csv > $NODEL/countries.csv
+echo "Country:ID|Code|lat:float|lon:float" > $NODEH/countries.csv
 
-echo "Country:ID|code|lat|lon|'1960'|'1961'|'1962'|'1963'|'1964'|'1965'|'1966'|'1967'|'1968'|'1969'|'1970'|'1971'|'1972'|'1973'|'1974'|'1975'|'1976'|'1977'|'1978'|'1979'|'1980'|'1981'|'1982'|'1983'|'1984'|'1985'|'1986'|'1987'|'1988'|'1989'|'1990'|'1991'|'1992'|'1993'|'1994'|'1995'|'1996'|'1997'|'1998'|'1999'|'2000'|'2001'|'2002'|'2003'|'2004'|'2005'|'2006'|'2007'|'2008'|'2009'|'2010'|'2011'|'2012'|'2013'|'2014'|'2015'|'2016'" > $NODEH/countries.csv
+# Years
+
+awk 'BEGIN{FS=OFS="|"}{print $2}'  $DATA/gdp.csv | sort -u > $NODEL/years.csv
+echo "Year:ID" > $NODEH/years.csv
+
+# Wanna test if gdp and pop Countries are identical?
+# cmp --silent <(printing '1,$2,$3' $DATA/countries_gdp.csv) <(printing '1,$2,$3' $DATA/countries_pop.csv) && echo 'identical'
 
 # Location
 
@@ -40,13 +36,23 @@ echo "Location:ID" > $NODEH/location.csv
 
 #### Edges
 
+# Population
+
+awk 'BEGIN{FS=OFS="|"}{print $1,$2,$3"|POPULATION"}' $DATA/population.csv > $EDGEL/population.csv
+echo ":START_ID|:END_ID|population:int|:TYPE" > $EDGEH/population.csv
+
+# GDP
+
+awk 'BEGIN{FS=OFS="|"}{print $1,$2,$3"|GDP"}' $DATA/gdp.csv > $EDGEL/gdp.csv
+echo ":START_ID|:END_ID|gdp:float|:TYPE" > $EDGEH/gdp.csv
+
 # Asylum seekers
 
 printing '3,$2,$1,$5,$7,$10,$11,$12,$13"|SEEKERS"' $DATA/asylum_seekers.csv \
     | sed 's/||/|0|/g' | sed 's/||/|0|/g' | sed 's/*/0/g' \
     | sed -e '/USA/c\United States of America' > $EDGEL/seekers.csv
 
-echo ":START_ID|:END_ID|Year|StartPending|Applied|Rejected|Closed|TotalDecisions|EndPending|:TYPE" > $EDGEH/seekers.csv
+echo ":START_ID|:END_ID|Year|StartPending:int|Applied:int|Rejected:int|Closed:int|TotalDecisions:int|EndPending:int|:TYPE" > $EDGEH/seekers.csv
 
 # Monthly seekers
 
@@ -69,13 +75,13 @@ echo ":START_ID|:END_ID|Year|F(0-4)|F(5-11)|F(5-17)|F(12-17)|F(18-59)|F(60+)|F(U
 printing '3,$2,$1,$4,$5,$6,$7,$8,$9,$10,$11"|CONCERN"' $DATA/persons_of_concern.csv \
     | sed 's/||/|0|/g' | sed 's/||/|0|/g' | sed 's/*/0/g' > $EDGEL/concern.csv
 
-echo ":START_ID|:END_ID|Year|Refugees|AsylumSeekers|Returned|IDP|ReturnedIDP|Stateless|Others|Total|:TYPE" > $EDGEH/concern.csv
+echo ":START_ID|:END_ID|Year|Refugees:float|AsylumSeekers:float|Returned:float|IDP:float|ReturnedIDP:float|Stateless:float|Others:float|Total:float|:TYPE" > $EDGEH/concern.csv
 
 # Resettlement
 
 printing '2,$1,$3,$4"|RESETTLERS"' $DATA/resettlement.csv \
     | sed 's/||/|0|/g' | sed 's/||/|0|/g' | sed 's/*/0/g' > $EDGEL/resettlement.csv
 
-echo ":START_ID|:END_ID|Year|Total|:TYPE" > $EDGEH/resettlement.csv
+echo ":START_ID|:END_ID|Year|Total:int|:TYPE" > $EDGEH/resettlement.csv
 
 touch $EDGEL/ingest.done
