@@ -59,7 +59,7 @@ with urllib.request.urlopen("https://query.data.world/s/ab2po6isxjxe25awy7eougit
 r = requests.get("http://api.worldbank.org/v2/en/indicator/NY.GDP.MKTP.CD?downloadformat=csv")
 z = zipfile.ZipFile(io.BytesIO(r.content))
 z.extractall(path+"/raw")
-with open(path+"/raw/API_NY.GDP.MKTP.CD_DS2_en_csv_v2_126271.csv", 'rb') as f:
+with open(path+"/raw/API_NY.GDP.MKTP.CD_DS2_en_csv_v2_150998.csv", 'rb') as f:
     i = 0
     for line in f:
         if i == 4:
